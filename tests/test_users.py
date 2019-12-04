@@ -42,11 +42,12 @@ class TestUserService(unittest.TestCase):
             db.drop_all()
             db.create_all()
             user = UserSchema().make_instance(patient1, partial=False)
+            db.session.add(user)
+            db.session.commit()
             client = app.test_client()
-            response = client.post('/api', user)
-            getting = client.get('/api/users/?id=1')
+            response = client.get('/api/users/?id=1')
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(getting.data["email"], patient1["email"])
+            self.assertEqual(response.data["email"], patient1["email"])
 
 
 if __name__ == '__main__':
