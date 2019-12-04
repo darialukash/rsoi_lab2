@@ -45,8 +45,9 @@ class TestUserService(unittest.TestCase):
             client = app.test_client()
             response = client.post('/api', user)
             getting = client.get('/api/users/1')
-            self.assertEqual(response.status_code, 200).json()
-            self.assertEqual(getting["email"], patient1["email"])
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(getting.data["email"], patient1["email"])
+
 
 if __name__ == '__main__':
     unittest.main()
