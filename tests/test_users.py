@@ -44,7 +44,7 @@ class TestUserService(unittest.TestCase):
             user = UserSchema().make_instance(patient1, partial=False)
             client = app.test_client()
             response = client.post('/api', user)
-            getting = client.get('/api/users' + str(patient1['id']))
+            getting = client.get('/api/users/?id=1')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(getting.data["email"], patient1["email"])
 
