@@ -9,31 +9,10 @@ app.config.from_object(TestConfig)
 patient1 = {"id": 1, "email": "one@dot.com", "password": "qwerty12"}
 patient2 = {"id": 2, "email": "two@dot.com", "password": "qwerty34"}
 
-'''
-def test_session():
-    app.config.from_object(TestConfig)
-    db.session.remove()
-    db.drop_all()
-    db.create_all()
-
-
-def create_user(new_user):
-    db.session.add(UserSchema().load(new_user))
-    db.session.commit()
-
-
-def test_index(app):
-    client = app.test_client()
-    response = client.get('/')
-    assert response.status_code == 200
-    assert b'Hello World!' in response.data
-'''
-
 
 class TestUserService(unittest.TestCase):
 
     def test_get(self):
-        app.config.from_object(TestConfig)
         with app.app_context() as context:
             context.push()
             db.drop_all()
@@ -41,7 +20,6 @@ class TestUserService(unittest.TestCase):
             self.assertIsNone(User.query.get(1))
 
     def test_exist(self):
-        app.config.from_object(TestConfig)
         with app.app_context() as context:
             context.push()
             db.drop_all()
@@ -57,6 +35,18 @@ class TestUserService(unittest.TestCase):
         response = client.get('/api')
         self.assertEqual(response.status_code, 200)
 
+    def test_post_user(self):
+        from services.users.models import set_password
+        with app.app_context() as context:
+            context.push()
+            db.drop_all()
+            db.create_all()
+            patient1.update({"password_hash": set_password(patient1['password'])})
+            client = app.test_client()
+            response = client.post('/api', patient1)
+            getting = client.get('/api/users/1')
+        self.assertEqual(response.status_code, 200).json()
+        self.assertEqual(getting["email"], patient1["email"])
 
 if __name__ == '__main__':
     unittest.main()
