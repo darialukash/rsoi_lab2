@@ -49,7 +49,7 @@ class TestUserService(unittest.TestCase):
             user = UserSchema().make_instance(patient1, partial=False)
             db.session.add(user)
             db.session.commit()
-            exist = User.get(patient1["id"])
+            exist = User.query.get(patient1["id"])
             self.assertEqual(user.id, exist.id)
 
     def test_exeeist(self):
