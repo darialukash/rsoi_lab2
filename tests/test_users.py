@@ -2,6 +2,7 @@ import unittest
 
 from services.users import app, db, resourses
 from services.users.models import User, UserSchema
+from services.users.resourses import FirstResourse, UserResourse
 from services.users.config import TestConfig
 
 app.config.from_object(TestConfig)
@@ -44,9 +45,7 @@ class TestUserService(unittest.TestCase):
             user = UserSchema().make_instance(patient1, partial=False)
             db.session.add(user)
             db.session.commit()
-
-            client = app.test_client()
-            response = client.get('/api/users/?id='+str(user.id))
+            response = UserResourse.get(user.id)
             print(response.data)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data["email"], patient1["email"])
