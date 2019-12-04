@@ -41,12 +41,12 @@ class TestUserService(unittest.TestCase):
             context.push()
             db.drop_all()
             db.create_all()
-            patient1.update({"password_hash": set_password(patient1['password'])})
+            user = UserSchema().make_instance(patient1, partial=False)
             client = app.test_client()
-            response = client.post('/api', patient1)
+            response = client.post('/api', user)
             getting = client.get('/api/users/1')
-        self.assertEqual(response.status_code, 200).json()
-        self.assertEqual(getting["email"], patient1["email"])
+            self.assertEqual(response.status_code, 200).json()
+            self.assertEqual(getting["email"], patient1["email"])
 
 if __name__ == '__main__':
     unittest.main()
