@@ -12,3 +12,13 @@ class DevConfig(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('CARDS_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'cards.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+class TestConfig(object):
+    DEBUG = True
+    PORT = os.environ.get('CARDS_PORT')
+    HOST = os.environ.get('CARDS_HOST')
+    CARDS_SERVER_NAME = str(HOST) + ":" + str(PORT)
+    SECRET_KEY = os.environ.get('CARDS_SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('CARDS_DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
