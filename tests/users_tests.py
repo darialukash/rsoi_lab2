@@ -52,8 +52,10 @@ class TestUserService(unittest.TestCase):
             exist = User.query.get(patient1["id"])
             self.assertEqual(user.id, exist.id)
 
-    def test_exeeist(self):
-        pass
+    def test_get_api(self):
+        client = app.test_client()
+        response = client.get('/api')
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@ class UserResourse(Resource):
     @basic_auth.login_required
     @requires_auth
     def get(self, id):
-        app.logger.info(f'Получен запрос на информацию о регисттрационных данных пациента с id = {id}')
+        app.logger.info(f'Получен запрос на информацию о регистрационных данных пациента с id = {id}')
         if g.current_user.id != id:
             abort(403)
         return UserSchema().dump(User.query.get_or_404(id))
