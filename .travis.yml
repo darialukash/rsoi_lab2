@@ -10,4 +10,5 @@ script:
   - python -m unittest tests/users_tests.py
   - coverage run --source=services -m unittest discover -s tests/
   - coverage report
-
+notifications:
+  email: false
