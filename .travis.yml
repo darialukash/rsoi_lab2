@@ -1,6 +1,7 @@
 language: python
 dist: bionic
-
+services:
+  - mysql
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS users;'
 install:
