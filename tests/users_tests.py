@@ -46,8 +46,7 @@ class TestUserService(unittest.TestCase):
             context.push()
             db.drop_all()
             db.create_all()
-
-            user = User(**patient1)
+            user = UserSchema().make_instance(patient1, partial=False)
             db.session.add(user)
             db.session.commit()
             exist = User.get(patient1["id"])
