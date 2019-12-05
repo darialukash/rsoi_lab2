@@ -3,7 +3,10 @@ dist: bionic
 services:
   - mysql
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS users;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test_users;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test_cards;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test_doctors;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test_appoints;'
 install:
   - pip install -r requirements.txt
 script:
