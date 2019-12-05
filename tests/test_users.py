@@ -4,6 +4,7 @@ from services.users import app, db, resourses
 from services.users.models import User, UserSchema
 from services.users.resourses import FirstResourse, UserResourse
 from services.users.config import TestConfig
+from flask import g, request
 
 app.config.from_object(TestConfig)
 
@@ -37,7 +38,7 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_user(self):
-        from services.users.models import set_password
+
         with app.app_context() as context:
             context.push()
             db.drop_all()
@@ -45,6 +46,7 @@ class TestUserService(unittest.TestCase):
             user = UserSchema().make_instance(patient1, partial=False)
             db.session.add(user)
             db.session.commit()
+            g.current_user = user
             response = UserResourse.get(user.id)
             print(response.data)
             self.assertEqual(response.status_code, 200)
