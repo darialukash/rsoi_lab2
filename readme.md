@@ -1,4 +1,4 @@
-### rsoi app
+### rsoi app [![Build Status](https://travis-ci.org/darialukash/rsoi_lab2.svg?branch=master)](https://travis-ci.org/darialukash/rsoi_lab2)
 
 Лабораторные работы по РСОИ (распределенные системы обработки информации)
 
