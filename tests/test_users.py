@@ -4,7 +4,7 @@ from services.users import app, db, resourses
 from services.users.models import User, UserSchema
 from services.users.resourses import FirstResourse, UserResourse
 from services.users.config import TestConfig
-from flask import g, request
+from flask_httpauth import HTTPBasicAuth
 
 app.config.from_object(TestConfig)
 
@@ -40,17 +40,19 @@ class TestUserService(unittest.TestCase):
     def test_post_user(self):
 
         with app.app_context() as context:
-            context.push()
-            db.drop_all()
-            db.create_all()
-            user = UserSchema().make_instance(patient1, partial=False)
-            db.session.add(user)
-            db.session.commit()
-            g.current_user = user
-            response = UserResourse.get(user.id)
-            print(response.data)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.data["email"], patient1["email"])
+            with app.test_client() as client:
+                context.push()
+                db.drop_all()
+                db.create_all()
+                user = UserSchema().make_instance(patient1, partial=False)
+                db.session.add(user)
+                db.session.commit()
+                response = client.get('/api/users/1', auth=HTTPBasicAuth(patient1["email"], patient1["password"]))
+                #g.current_user = user
+                #response = UserResourse.get(user.id)
+                print(response.data)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data["email"], patient1["email"])
 
 
 if __name__ == '__main__':
