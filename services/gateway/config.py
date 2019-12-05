@@ -14,7 +14,7 @@ class DevConfig(object):
 
 class TestConfig(object):
     DEBUG = True
-    PORT = os.environ.get('GATEWAY_PORT')
-    HOST = os.environ.get('GATEWAY_HOST')
+    PORT = os.environ.get('GATEWAY_PORT') or 5000
+    HOST = os.environ.get('GATEWAY_HOST') or "http://127.0.0.1"
     GATE_SERVER_NAME = str(HOST) + ":" + str(PORT)
-    SECRET_KEY = os.environ.get('GATEWAY_SECRET_KEY')
+    SECRET_KEY = os.environ.get('GATEWAY_SECRET_KEY') or 'jfhky56456456jutyghgfhjgdjhfu78'

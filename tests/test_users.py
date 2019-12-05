@@ -1,10 +1,11 @@
 import unittest
 
 from services.users import app, db, resourses
-from services.users.models import User, UserSchema
+from services.users.models import User, UserSchema, set_password
 from services.users.resourses import FirstResourse, UserResourse
 from services.users.config import TestConfig
-from flask_httpauth import HTTPBasicAuth
+from base64 import b64encode
+import json
 
 app.config.from_object(TestConfig)
 
@@ -26,6 +27,7 @@ class TestUserService(unittest.TestCase):
             context.push()
             db.drop_all()
             db.create_all()
+            patient1.update({"password_hash": set_password(patient1['password'])})
             user = UserSchema().make_instance(patient1, partial=False)
             db.session.add(user)
             db.session.commit()
@@ -38,21 +40,20 @@ class TestUserService(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_user(self):
-
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
                 db.drop_all()
                 db.create_all()
+                patient1.update({"password_hash": set_password(patient1['password'])})
                 user = UserSchema().make_instance(patient1, partial=False)
                 db.session.add(user)
                 db.session.commit()
-                response = client.get('/api/users/1', auth=HTTPBasicAuth(patient1["email"], patient1["password"]))
-                #g.current_user = user
-                #response = UserResourse.get(user.id)
-                print(response.data)
+                authent = 'Basic %s' % b64encode(bytes(patient1["email"] + ':' + patient1["password"],
+                                                       "utf-8")).decode("ascii")
+                response = client.get('/api/users/1', headers=dict(Authorization=f"{authent}"))
                 self.assertEqual(response.status_code, 200)
-                self.assertEqual(response.data["email"], patient1["email"])
+                self.assertEqual(response.json["email"], patient1["email"])
 
 
 if __name__ == '__main__':

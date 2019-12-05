@@ -16,9 +16,10 @@ class DevConfig(object):
 
 class TestConfig(object):
     DEBUG = True
-    PORT = os.environ.get('CARDS_PORT')
-    HOST = os.environ.get('CARDS_HOST')
+    PORT = os.environ.get('CARDS_PORT') or 5002
+    HOST = os.environ.get('CARDS_HOST') or  "http://127.0.0.1"
     CARDS_SERVER_NAME = str(HOST) + ":" + str(PORT)
-    SECRET_KEY = os.environ.get('CARDS_SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('CARDS_DATABASE_URL')
+    SECRET_KEY = os.environ.get('CARDS_SECRET_KEY') or 'jfhkyjutyghjgdjhfu78'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('CARDS_DATABASE_URL') or \
+                              'sqlite:///' + os.path.join(basedir, 'test_cards.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

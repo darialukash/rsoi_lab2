@@ -11,7 +11,7 @@ class DoctorResourse(Resource):
         return DoctorSchema().dump(Doctors.query.filter_by(id_card=id_card).first())
 
     def post(self):
-        data = request.get_json() or {}
+        data = request.form or request.get_json() or {}
         if "id_card" not in data:
             return 'must include id_card field!'
         app.logger.info(f'Получен запрос на добавление специалиста с id = {data["id_card"]}')
@@ -22,7 +22,7 @@ class DoctorResourse(Resource):
 
     def put(self, id_card):
         app.logger.info(f'Получен запрос на редактирование информации о специалисте с id = {id_card}')
-        data = request.get_json() or {}
+        data = request.form or request.get_json() or {}
         DoctorSchema().load(data, instance=Doctors.query.filter_by(id_card=id_card).first(), partial=True)
         db.session.commit()
         return DoctorSchema().dump(Doctors.query.filter_by(id_card=id_card).first())
