@@ -11,11 +11,12 @@ patient1 = {"id": 1, "id_card": 1000, "user_id": 1, "user_data": "Alica Ivannova
 patient2 = {"id": 2, "id_card": 1000, "user_id": 2, "user_data": "Pavel Sidorov m 23-6-1993"}
 
 
-class TestUserService(unittest.TestCase):
+class TestScheduleService(unittest.TestCase):
 
     def test_get(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             self.assertIsNone(Schedules.query.get(1))
@@ -23,6 +24,7 @@ class TestUserService(unittest.TestCase):
     def test_exist(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             appoint = SchedulesSchema().make_instance(patient1, partial=False)
@@ -35,6 +37,7 @@ class TestUserService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 appoint = SchedulesSchema().make_instance(patient1, partial=False)
@@ -44,23 +47,11 @@ class TestUserService(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.json["user_data"], patient1["user_data"])
 
-    def test_update_appoint(self):
-        with app.app_context() as context:
-            with app.test_client() as client:
-                context.push()
-                db.drop_all()
-                db.create_all()
-                appoint = SchedulesSchema().make_instance(patient1, partial=False)
-                db.session.add(appoint)
-                db.session.commit()
-                response = client.put('/schedule/1', data=dict(id_card=2000))
-                self.assertEqual(response.status_code, 200)
-                self.assertEqual(response.json["id_card"], 2000)
-
     def test_post_appoint(self):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 response = client.post('/schedule', data=patient1)
@@ -71,6 +62,7 @@ class TestUserService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 appoint = SchedulesSchema().make_instance(patient1, partial=False)
@@ -78,9 +70,10 @@ class TestUserService(unittest.TestCase):
                 db.session.commit()
                 response = client.delete('/schedule/1')
                 self.assertEqual(response.status_code, 200)
-                appoints = Schedules.query.get.all()
-                self.assertIsNone(appoints)
+                appoints = Schedules.query.all()
+                self.assertEqual(appoints, [])
 
 
 if __name__ == '__main__':
     unittest.main()
+

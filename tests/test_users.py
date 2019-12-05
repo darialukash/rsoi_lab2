@@ -18,13 +18,16 @@ class TestUserService(unittest.TestCase):
     def test_get(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             self.assertIsNone(User.query.get(1))
+            db.session.remove()
 
     def test_exist(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             patient1.update({"password_hash": set_password(patient1['password'])})
@@ -33,16 +36,24 @@ class TestUserService(unittest.TestCase):
             db.session.commit()
             exist = User.query.get(patient1["id"])
             self.assertEqual(user.id, exist.id)
+            db.session.remove()
 
     def test_get_api(self):
-        client = app.test_client()
-        response = client.get('/api')
-        self.assertEqual(response.status_code, 200)
+        with app.app_context() as context:
+            context.push()
+            db.session.remove()
+            db.drop_all()
+            db.create_all()
+            client = app.test_client()
+            response = client.get('/api')
+            self.assertEqual(response.status_code, 200)
+
 
     def test_post_user(self):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 patient1.update({"password_hash": set_password(patient1['password'])})
@@ -54,6 +65,7 @@ class TestUserService(unittest.TestCase):
                 response = client.get('/api/users/1', headers=dict(Authorization=f"{authent}"))
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.json["email"], patient1["email"])
+                db.session.remove()
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ class ScheduleResourse(Resource):
 
     def get(self, id):
         app.logger.info(f'Получен запрос на информацию о записи с id = {id}')
-        return SchedulesSchema.dump(Schedules.query.get_or_404(id))
+        return SchedulesSchema().dump(Schedules.query.get_or_404(id))
 
     def post(self):
         data = request.form or request.get_json() or {}

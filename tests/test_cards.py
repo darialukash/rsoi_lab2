@@ -8,6 +8,7 @@ from services.cards.config import TestConfig
 import json
 
 app.config.from_object(TestConfig)
+db.init_app(app)
 
 patient1 = {"id": 1, "name": "Alica", "surname": "Ivanova", "dd": 13, "mm": 10, "yy": 1995, "sex": "f", "user_id": 1}
 patient1_update = {"user_id": 1, "dd": 18}
@@ -19,6 +20,7 @@ class TestUserService(unittest.TestCase):
     def test_get(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             self.assertIsNone(Cards.query.get(1))
@@ -26,6 +28,7 @@ class TestUserService(unittest.TestCase):
     def test_exist(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             card = CardSchema().make_instance(patient1, partial=False)
@@ -34,11 +37,11 @@ class TestUserService(unittest.TestCase):
             exist = Cards.query.get(patient1["id"])
             self.assertEqual(card.id, exist.id)
 
-
     def test_get_user_card(self):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 card = CardSchema().make_instance(patient1, partial=False)
@@ -52,6 +55,7 @@ class TestUserService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 card = CardSchema().make_instance(patient1, partial=False)
@@ -65,6 +69,7 @@ class TestUserService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 response = client.post('/cards', data=patient1)

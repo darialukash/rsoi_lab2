@@ -9,12 +9,6 @@ import json
 
 app.config.from_object(TestConfig)
 
-id = db.Column(db.Integer, primary_key=True)
-id_card = db.Column(db.Integer, unique=True, nullable=False)
-name = db.Column(db.String(64))
-surname = db.Column(db.String(64))
-specialization = db.Column(db.String(64))
-
 doctor1 = {"id": 1, "id_card": 1000, "name": "Maria", "surname": "Kot", "specialization": "family medicine"}
 doctor1_update = {"specialization": "cardiology"}
 doctor2 = {"id": 2, "id_card": 2000, "name": "Pavel", "surname": "Un", "specialization": "allergology"}
@@ -25,6 +19,7 @@ class TestDoctorsService(unittest.TestCase):
     def test_get(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             self.assertIsNone(Doctors.query.get(1))
@@ -32,6 +27,7 @@ class TestDoctorsService(unittest.TestCase):
     def test_exist(self):
         with app.app_context() as context:
             context.push()
+            db.session.remove()
             db.drop_all()
             db.create_all()
             doc = DoctorSchema().make_instance(doctor1, partial=False)
@@ -44,6 +40,7 @@ class TestDoctorsService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 doc = DoctorSchema().make_instance(doctor1, partial=False)
@@ -59,6 +56,7 @@ class TestDoctorsService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 response = client.post('/doctors', data=doctor1)
@@ -69,6 +67,7 @@ class TestDoctorsService(unittest.TestCase):
         with app.app_context() as context:
             with app.test_client() as client:
                 context.push()
+                db.session.remove()
                 db.drop_all()
                 db.create_all()
                 doc = DoctorSchema().make_instance(doctor1, partial=False)
