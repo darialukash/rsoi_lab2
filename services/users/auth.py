@@ -25,7 +25,7 @@ def requires_auth(f):
             resp.headers["WWW-Authenticate"] = 'Basic realm="Example"'
             return resp
         user = User.query.filter_by(email=auth.username).first()
-        if kwargs["id"] != str(user.id):
+        if str(kwargs["id"]) != str(user.id):
             resp = jsonify({"message": "Please use proper password.",
                             "user_id": user.id,
                             "id": kwargs["id"]})

@@ -58,7 +58,7 @@ class GateCardResourse(Resource):
     @requires_auth
     def get(self, id):
         app.logger.info(f'Получен запрос на информацию о карте  пациента с id = {id}')
-        card = requests.get(gate_config.GATE_SERVER_NAME + '/cards/' + str(id)).json()
+        card = requests.get(gate_config.GATE_SERVER_NAME + '/cards/' + str(id))
         return card
 
     @basic_auth.login_required
@@ -67,7 +67,7 @@ class GateCardResourse(Resource):
         app.logger.info(f'Получен запрос на создание карты пациента с id = {id}')
         data = request.get_json() or {}
         response = requests.post(gate_config.GATE_SERVER_NAME + '/cards', data=data)
-        return data, response.status_code
+        return response  # data, response.status_code
 
     @basic_auth.login_required
     @requires_auth
@@ -84,9 +84,8 @@ class GateDocsResourse(Resource):
         page = request.args.get('page', 1, type=int)
         size = request.args.get('size', 1, type=int)
         app.logger.info(f'Получен запрос на информацию о специалистах')
-        docs = requests.get(gate_config.GATE_SERVER_NAME + '/doctors').json()
-        return docs.paginate(page=page, size=size)
-
+        docs = requests.get(gate_config.GATE_SERVER_NAME + '/doctors')
+        return docs.json().paginate(page=page, size=size)
 
 
 class GateAddtoDocResourse(Resource):

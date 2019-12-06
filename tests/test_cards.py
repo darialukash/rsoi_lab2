@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import patch, MagicMock
+from flask import jsonify, make_response
 
 from services.cards import app, db, resourses
 from services.cards.models import Cards, CardSchema
@@ -8,7 +10,6 @@ from services.cards.config import TestConfig
 import json
 
 app.config.from_object(TestConfig)
-db.init_app(app)
 
 patient1 = {"id": 1, "name": "Alica", "surname": "Ivanova", "dd": 13, "mm": 10, "yy": 1995, "sex": "f", "user_id": 1}
 patient1_update = {"user_id": 1, "dd": 18}
@@ -75,6 +76,41 @@ class TestUserService(unittest.TestCase):
                 response = client.post('/cards', data=patient1)
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.json["user_id"], 1)
+
+    @patch.object(CardResourse, 'get')
+    def test_get_card(self, mock_get):
+        with app.app_context() as context:
+            with app.test_client():
+                context.push()
+                mock_get.return_value = make_response(jsonify(patient1, 200))
+                resp = CardResourse.get(1)
+                mock_get.assert_called_with(1)
+                self.assertEqual(resp.json[0]["user_id"], 1)
+                self.assertEqual(resp.status_code, 200)
+
+    @patch.object(CardResourse, 'post')
+    def test_post_card(self, mock_post):
+        with app.app_context() as context:
+            with app.test_client():
+                context.push()
+                mock_post.return_value = make_response(jsonify(patient1, 200))
+                resp = CardResourse.post()
+                mock_post.assert_called_with()
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.json[0]["user_id"], 1)
+
+    @patch.object(CardResourse, 'put')
+    def test_put_card(self, mock_put):
+        with app.app_context() as context:
+            with app.test_client():
+                context.push()
+                mock_put.args = patient1_update
+                patient1["dd"] = 18
+                mock_put.return_value = make_response(jsonify(patient1), 200)
+                resp = CardResourse.put(1)
+                mock_put.assert_called_with(1)
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.json["user_id"], 1)
 
 
 if __name__ == '__main__':
