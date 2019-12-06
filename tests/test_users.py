@@ -90,6 +90,75 @@ class TestUserService(unittest.TestCase):
                 db.session.remove()
 
 
+class TestFirstResourse(unittest.TestCase):
+
+    @patch('requests.get')
+    def test_get(self, mock_get):
+        with app.app_context() as context:
+            with app.test_request_context('/api'):
+                context.push()
+                mock_get.return_value = make_response(jsonify({"message": "It is the Index page. To continue, please,\
+                  use post request with 'email' and 'password' fields to register."}), 200)
+                resp = FirstResourse().get()
+                self.assertEqual(resp.status_code, 200)
+
+    @patch('requests.post')
+    def test_post_new_user(self, mock_post):
+        with app.app_context() as context:
+            with app.test_request_context('/api', json=card1):
+                context.push()
+                db.session.remove()
+                db.drop_all()
+                db.create_all()
+                mock_post.return_value = card1
+                resp = FirstResourse().post()
+                self.assertEqual(resp["email"], card1["email"])
+
+    @patch('requests.post')
+    def test_post_exist_user(self, mock_post):
+        with app.app_context() as context:
+            with app.test_request_context('/api', json=card1):
+                context.push()
+                db.session.remove()
+                db.drop_all()
+                db.create_all()
+                card1.update({"password_hash": set_password(card1['password'])})
+                user = UserSchema().make_instance(card1, partial=False)
+                db.session.add(user)
+                db.session.commit()
+                mock_post.return_value = 'use different email!'
+                resp = FirstResourse().post()
+                self.assertEqual(resp, 'use different email!')
+
+
+class TestUserResourse(unittest.TestCase):
+
+    @patch('requests.get')
+    def test_get(self, mock_get):
+        with app.app_context() as context:
+            with app.test_request_context('/api/users/?id=1', headers=dict(Authorization=f"{authent}")):
+                context.push()
+                db.session.remove()
+                db.drop_all()
+                db.create_all()
+                card1.update({"password_hash": set_password(card1['password'])})
+                user = UserSchema().make_instance(card1, partial=False)
+                db.session.add(user)
+                db.session.commit()
+                mock_get.return_value = make_response(jsonify(card1), 200)
+                resp = UserResourse().get(id=1)
+                self.assertEqual(resp.status_code, 200)
+
+    @patch('requests.get')
+    def test_get(self, mock_get):
+        with app.app_context() as context:
+            with app.test_request_context('/api'):
+                context.push()
+                mock_get.return_value = make_response(jsonify({"message": "It is the Index page. To continue, please, \
+                     use post request with 'email' and 'password' fields to register."}), 200)
+                resp = FirstResourse().get()
+                self.assertEqual(resp.status_code, 200)
+
 class TestGateCardResourse(unittest.TestCase):
 
     @patch('requests.get')

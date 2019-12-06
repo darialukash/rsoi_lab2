@@ -1,4 +1,4 @@
-from flask import request, abort, g
+from flask import request, abort, g, jsonify
 from flask_restful import Resource, reqparse
 import requests
 
@@ -12,9 +12,9 @@ from services.gateway.config import DevConfig as gate_config
 class FirstResourse(Resource):
 
     def get(self):
-        msg = """ It is the Index page. To continue, please,  use post request with 'email' and 'password' \
+        msg = """It is the Index page. To continue, please,  use post request with 'email' and 'password' \
         fields to register."""
-        return msg
+        return jsonify({"message": msg})
 
     def post(self):
         data = request.get_json() or {}
