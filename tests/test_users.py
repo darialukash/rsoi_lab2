@@ -106,6 +106,13 @@ class TestGateCardResourse(unittest.TestCase):
         with app.app_context() as context:
             with app.test_request_context('/api/users/1/card', headers=dict(Authorization=f"{authent}")):
                 context.push()
+                db.session.remove()
+                db.drop_all()
+                db.create_all()
+                patient1.update({"password_hash": set_password(card1['password'])})
+                user = UserSchema().make_instance(card1, partial=False)
+                db.session.add(user)
+                db.session.commit()
                 mock_get.return_value = make_response(jsonify([patient1]), 200)
                 resp = GateCardResourse().get(id=1)
                 self.assertEqual(resp.status_code, 200)
